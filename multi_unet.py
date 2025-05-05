@@ -241,8 +241,8 @@ def multi_unet_model(n_classes=7, IMG_HEIGHT=256, IMG_WIDTH=256, IMG_CHANNELS=1)
 n_classes= 7
 
 #Capture training image info as a list
-image_directory = 'C:/Users/User/Desktop/thoracic_seg/raw_images'
-liver_directory = 'C:/Users/User/Desktop/thoracic_seg/segmentations'
+image_directory = 'C:/Users/User/Desktop/thoracic_seg/raw_images/'
+mask_directory = 'C:/Users/User/Desktop/thoracic_seg/segmentations/'
 
 image_dataset = []
 mask_dataset = []
@@ -271,46 +271,58 @@ for i, image_name in enumerate(images):
         image_dataset.append(np.array(image))
         image_names.append(image_name.split('.')[0])
 
-livers = sorted(os.listdir(liver_directory))
-for i, image_name in enumerate(livers):
+masks = sorted(os.listdir(mask_directory))
+for i, image_name in enumerate(masks):
     if (image_name.split('.')[1] == 'nii'):
-        image = nib.load(liver_directory+image_name)
+        image = nib.load(mask_directory+image_name)
         image = np.array(image.get_fdata())
         image = pad_volume(image)
         mask_dataset.append(np.array(image))
 
+original_data_size = 0
 
 for i in range(len(image_dataset)):
     for j in range(mask_dataset[i].shape[2]):
         sliced_image_dataset.append(image_dataset[i][:,:,j])
         sliced_mask_dataset.append(mask_dataset[i][:,:,j])
         sliced_image_names.append(image_names[i] + '-' + str(j))
+        original_data_size += 1
         #rotation
         cw = random.randint(0,1)
-        angle = random.randint(5,10)
+        angle = random.randint(5,15)
         #contrast adjustment
         adjust = random.randint(0,1)
         contrast = random.randint(1,2)
         #reflection
-        reflect = random.randint(0,2)
+        reflect = random.randint(0,1)
         #applying changes
         if adjust and cw == 1:
             augmented_image = rotate(cv2.convertScaleAbs(image_dataset[i][:,:,j], alpha = contrast, beta = 0), angle, reshape = False, order=1)
             augmented_liver = rotate(mask_dataset[i][:,:,j], angle, reshape = False, order=0)
+            if reflect:
+                augmented_image = cv2.flip(augmented_image, 1)
+                augmented_liver = cv2.flip(augmented_liver, 1)
             sliced_image_dataset.append(augmented_image * augmented_liver)
             sliced_mask_dataset.append(rotate(mask_dataset[i][:,:,j], angle, reshape = False, order=0))
             sliced_image_names.append(image_names[i] + '-' + str(j) + '-aug')
         if adjust and cw == 0:
             augmented_image = rotate(cv2.convertScaleAbs(image_dataset[i][:,:,j], alpha = contrast, beta = 0), angle * -1, reshape = False, order=1)
             augmented_liver = rotate(mask_dataset[i][:,:,j], angle * -1, reshape = False, order=0)
+            if reflect:
+                augmented_image = cv2.flip(augmented_image, 1)
+                augmented_liver = cv2.flip(augmented_liver, 1)
             sliced_image_dataset.append(augmented_image * augmented_liver)
             sliced_mask_dataset.append(rotate(mask_dataset[i][:,:,j], angle * -1, reshape = False, order=0))
             sliced_image_names.append(image_names[i] + '-' + str(j) + '-aug')
+
 
 sliced_image_dataset = np.array(sliced_image_dataset)
 sliced_mask_dataset = np.array(sliced_mask_dataset)
 image_names = np.array(image_names)
 sliced_image_names = np.array(sliced_image_names)
+
+print(f'Original Data Size: {original_data_size}')
+print(f'Dataset Size: {len(sliced_image_dataset)}')
 
 #Sanity check, view a few images
 # image_number = random.randint(0, len(sliced_image_dataset))
@@ -328,7 +340,7 @@ sliced_masks_reshaped = sliced_mask_dataset.reshape(-1,1)
 sliced_masks_reshaped_encoded = labelencoder.fit_transform(sliced_masks_reshaped)
 sliced_masks_encoded_original_shape = sliced_masks_reshaped_encoded.reshape(n, h, w)
 
-print(np.unique(sliced_masks_encoded_original_shape))
+print(f'Labels: {np.unique(sliced_masks_encoded_original_shape)}')
 
 sliced_image_dataset = np.expand_dims(sliced_image_dataset, axis=3)
 sliced_image_dataset = normalize(sliced_image_dataset, axis=1)
