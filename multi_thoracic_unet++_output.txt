@@ -1,0 +1,11 @@
+sliced image dataset:  3833
+Class weights: [0.00059115 0.00076403 0.24610878 0.24677399 0.25111463 0.24811991
+ 0.0065275 ]
+FOLD------------------------------------------
+Max Dice Score:  0.881282389163971
+Max Val Dice Score:  0.8369130492210388
+Max TPR:  0.915454626083374
+Max FPR:  0.00200517475605011
+Average Prediction Dice Score:  0.6443992358853837
+Average Prediction TPR:  0.4841235639070445
+Average Prediction FPR:  0.007649707306493684
