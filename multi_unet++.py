@@ -30,6 +30,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import backend as K
 from tensorflow.keras.losses import Loss
+from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 
 # Metric Definition
@@ -295,6 +296,7 @@ sliced_image_dataset = normalize(sliced_image_dataset, axis=1)
 sliced_mask_dataset = np.expand_dims(sliced_masks_encoded_original_shape, axis=3)
 
 f = open(f"C:/Users/User/Desktop/thoracic_seg/outputs/multi_thoracic_unet++_output.txt", "a")
+print("original image dataset: ", original_dataset_size, file=f)
 print("sliced image dataset: ", len(sliced_image_dataset), file=f)
 f.close()
 
@@ -339,11 +341,17 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
     model = get_model()
 
     checkpoint = ModelCheckpoint(f'C:/Users/User/Desktop/thoracic_seg/models/multi_thoracic_unet++_model_{i}.h5', monitor='val_loss', save_best_only=True)
+    lr_reduction = ReduceLROnPlateau(monitor='val_loss', 
+                                 factor=0.5, 
+                                 patience=10, 
+                                 verbose=1, 
+                                 min_lr=1e-6)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=50, verbose=1)
 
     history = model.fit(X_train, y_train_cat, 
                         batch_size=64, 
                         verbose=1, 
-                        epochs=500, 
+                        epochs=1000, 
                         validation_data=(X_test, y_test_cat), 
                         shuffle=False,
                         callbacks=[checkpoint])

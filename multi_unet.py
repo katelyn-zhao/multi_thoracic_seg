@@ -27,6 +27,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import backend as K
 from tensorflow.keras.losses import Loss
+from tensorflow.keras.callbacks import ReduceLROnPlateau
+
 
 # Defining Metrics
 ##############################################################################################
@@ -145,91 +147,91 @@ def multi_unet_model(n_classes=7, IMG_HEIGHT=256, IMG_WIDTH=256, IMG_CHANNELS=1)
     s = inputs
 
     # Contraction path
-    c1 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(s)
+    c1 = Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(s)
     c1 = BatchNormalization()(c1)
     c1 = Dropout(0.1)(c1)
-    c1 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c1)
+    c1 = Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c1)
     c1 = BatchNormalization()(c1)
     p1 = MaxPooling2D((2, 2))(c1)
     
-    c2 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p1)
+    c2 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p1)
     c2 = BatchNormalization()(c2)
     c2 = Dropout(0.1)(c2)
-    c2 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c2)
+    c2 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c2)
     c2 = BatchNormalization()(c2)
     p2 = MaxPooling2D((2, 2))(c2)
      
-    c3 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p2)
+    c3 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p2)
     c3 = BatchNormalization()(c3)
     c3 = Dropout(0.2)(c3)
-    c3 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c3)
+    c3 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c3)
     c3 = BatchNormalization()(c3)
     p3 = MaxPooling2D((2, 2))(c3)
      
-    c4 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p3)
+    c4 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p3)
     c4 = BatchNormalization()(c4)
     c4 = Dropout(0.2)(c4)
-    c4 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c4)
+    c4 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c4)
     c4 = BatchNormalization()(c4)
     p4 = MaxPooling2D(pool_size=(2, 2))(c4)
 
-    c5 = Conv2D(1024, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p4)
+    c5 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p4)
     c5 = BatchNormalization()(c5)
     c5 = Dropout(0.3)(c5)
-    c5 = Conv2D(1024, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c5)
+    c5 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c5)
     c5 = BatchNormalization()(c5)
     p5 = MaxPooling2D(pool_size=(2, 2))(c5)
     
-    c6 = Conv2D(2048, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p5)
+    c6 = Conv2D(1024, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(p5)
     c6 = BatchNormalization()(c6)
     c6 = Dropout(0.3)(c6)
-    c6 = Conv2D(2048, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c6)
+    c6 = Conv2D(1024, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c6)
     c6 = BatchNormalization()(c6)
     
     # Expansive path 
-    u7 = Conv2DTranspose(1024, (2, 2), strides=(2, 2), padding='same')(c6)
+    u7 = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding='same')(c6)
     u7 = concatenate([u7, c5])
-    c7 = Conv2D(1024, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u7)
+    c7 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u7)
     c7 = BatchNormalization()(c7)
     c7 = Dropout(0.2)(c7)
-    c7 = Conv2D(1024, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c7)
+    c7 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c7)
     c7 = BatchNormalization()(c7)
      
-    u8 = Conv2DTranspose(512, (2, 2), strides=(2, 2), padding='same')(c7)
+    u8 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(c7)
     u8 = concatenate([u8, c4])
-    c8 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u8)
+    c8 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u8)
     c8 = BatchNormalization()(c8)
     c8 = Dropout(0.2)(c8)
-    c8 = Conv2D(512, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c8)
+    c8 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c8)
     c8 = BatchNormalization()(c8)
      
-    u9 = Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(c8)
+    u9 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(c8)
     u9 = concatenate([u9, c3])
-    c9 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u9)
+    c9 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u9)
     c9 = BatchNormalization()(c9)
     c9 = Dropout(0.2)(c9)
-    c9 = Conv2D(256, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c9)
+    c9 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c9)
     c9 = BatchNormalization()(c9)
      
-    u10 = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(c9)
+    u10 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(c9)
     u10 = concatenate([u10, c2])
-    c10 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u10)
+    c10 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u10)
     c10 = BatchNormalization()(c10)
     c10 = Dropout(0.1)(c10)
-    c10 = Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c10)
+    c10 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c10)
     c10 = BatchNormalization()(c10)
      
-    u11 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(c10)
+    u11 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(c10)
     u11 = concatenate([u11, c1], axis=3)
-    c11 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u11)
+    c11 = Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(u11)
     c11 = BatchNormalization()(c11)
     c11 = Dropout(0.1)(c11)
-    c11 = Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c11)
+    c11 = Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(c11)
     c11 = BatchNormalization()(c11)
      
     outputs = Conv2D(n_classes, (1, 1), activation='softmax')(c11)     
     model = Model(inputs=[inputs], outputs=[outputs])
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=[dice_coef, tpr, fpr])
+    model.compile(optimizer='adam', loss=combined_loss, metrics=[dice_coef, tpr, fpr])
     model.summary()
     
     return model
@@ -348,6 +350,7 @@ sliced_image_dataset = normalize(sliced_image_dataset, axis=1)
 sliced_mask_dataset = np.expand_dims(sliced_masks_encoded_original_shape, axis=3)
 
 f = open(f"C:/Users/User/Desktop/thoracic_seg/outputs/multi_thoracic_unet_output.txt", "a")
+print("original image dataset: ", original_data_size, file=f)
 print("sliced image dataset: ", len(sliced_image_dataset), file=f)
 f.close()
 
@@ -391,14 +394,21 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
     model = get_model()
 
     checkpoint = ModelCheckpoint(f'C:/Users/User/Desktop/thoracic_seg/models/multi_thoracic_unet_model_{i}.h5', monitor='val_loss', save_best_only=True)
+    lr_reduction = ReduceLROnPlateau(monitor='val_loss', 
+                                 factor=0.5, 
+                                 patience=10, 
+                                 verbose=1, 
+                                 min_lr=1e-6)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=50, verbose=1)
+
 
     history = model.fit(X_train, y_train_cat, 
                         batch_size=64, 
                         verbose=1, 
-                        epochs=500, 
+                        epochs=1000, 
                         validation_data=(X_test, y_test_cat), 
                         shuffle=False,
-                        callbacks=[checkpoint])
+                        callbacks=[checkpoint, lr_reduction, early_stopping])
                         
     #Evaluate the model
     plt.figure(figsize=(15,5))
