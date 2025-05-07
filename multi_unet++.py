@@ -248,7 +248,7 @@ for i in range(len(image_dataset)):
         original_dataset_size += 1
         #rotation
         cw = random.randint(0,1)
-        angle = random.randint(5,15)
+        angle = random.randint(5,10)
         #contrast adjustment
         adjust = random.randint(0,1)
         contrast = random.randint(1,2)
