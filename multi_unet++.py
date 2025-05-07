@@ -354,7 +354,11 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
                         epochs=1000, 
                         validation_data=(X_test, y_test_cat), 
                         shuffle=False,
-                        callbacks=[checkpoint])
+                        callbacks=[checkpoint, lr_reduction, early_stopping])
+
+    f = open(f'C:/Users/User/Desktop/thoracic_seg/outputs/multi_thoracic_unet_output.txt', "a")
+    print("Stopped at epoch:", early_stopping.stopped_epoch)
+    f.close()
                         
     #Evaluate the model
     plt.figure(figsize=(15,5))
