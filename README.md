@@ -10,7 +10,6 @@ This study involved a retrospective analysis of liver MRI-PDFF exams acquired fr
 We present a deep learning model based on a U-Net encoder-decoder architecture was developed to automate region-of-interest (ROI) segmentation in liver MRI-PDFF quality-control phantoms. The model was designed to classify voxels into seven categories, corresponding to the five cylindrical compartments of the phantom, background, and imaging artifacts. The network consisted of six encoding-decoding layers with filter sizes of [32, 64, 128, 256, 512, 1024], incorporating batch normalization, max pooling, and dropout regularization (increasing from 0.1 to 0.3 across layers). Training was performed using Dice loss to optimize segmentation accuracy, with the Adam optimizer and a softmax activation function in the final layer. Model performance was evaluated by comparing automated and manual ROI-based PDFF measurements using Bland-Altman analysis to assess agreement and quantify bias and limits of agreement.
 
 ## Running the Code
-This project was developed and tested in a TensorFlow 2.5 environment. To reproduce results or run the pipeline:
 
 ### Environment Setup
 
