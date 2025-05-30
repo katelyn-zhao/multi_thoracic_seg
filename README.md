@@ -14,11 +14,10 @@ This project was developed and tested in a TensorFlow 2.5 environment. To reprod
 
 ### Environment Setup
 
-Activate the required environment using Anaconda:
+This project was run using **TensorFlow 2.5**. Please ensure your environment is compatible with TensorFlow 2.5 and related dependencies.
 
-```bash
-conda activate tf2.5
-```
+If you're using Anaconda, you can activate an existing environment with TensorFlow 2.5 (e.g., `conda activate tf2.5`) or create a new one as needed.
+
 ### Folder and File Descriptions
 
 The repository is organized as follows:
