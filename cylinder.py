@@ -239,7 +239,7 @@ def multi_unet_model(n_classes=7, IMG_HEIGHT=256, IMG_WIDTH=256, IMG_CHANNELS=1)
      
     outputs = Conv2D(n_classes, (1, 1), activation='softmax')(c11)     
     model = Model(inputs=[inputs], outputs=[outputs])
-    model.compile(optimizer='adam', loss=combined_loss, metrics=[dice_coef, tpr, fpr])
+    model.compile(optimizer='adam', loss=dice_loss, metrics=[dice_coef, tpr, fpr])
     model.summary()
     
     return model
@@ -253,14 +253,11 @@ n_classes= 7
 #Capture training image info as a list
 image_directory = 'C:/Users/Mittal/Desktop/thoracic_seg/raw_images/'
 mask_directory = 'C:/Users/Mittal/Desktop/thoracic_seg/segmentations/'
-# predictions_directory = 'C:/Users/Mittal/Desktop/thoracic_seg/unet_niipredictions/'
 
 image_dataset = []
 mask_dataset = []
-# prediction_dataset = []
 sliced_image_dataset = []
 sliced_mask_dataset = []
-# sliced_prediction_dataset = []
 image_names = []
 sliced_image_names = []
 
@@ -279,89 +276,87 @@ for i, image_name in enumerate(masks):
         image = np.array(image.get_fdata())
         mask_dataset.append(np.array(image))
 
-# predictions = sorted(os.listdir(predictions_directory))
-# for i, image_name in enumerate(predictions):
-#     if (image_name.split('.')[1] == 'nii'):
-#         image = nib.load(predictions_directory+image_name)
-#         image = np.array(image.get_fdata())
-#         prediction_dataset.append(np.array(image))
-
 original_data_size = 0
 
 for i in range(len(image_dataset)):
-    if image_dataset[i].shape[2] < 30:
-        for j in range(6, mask_dataset[i].shape[2]-6):
-            # thoracic_body = np.where(prediction_dataset[i][:,:,j] == 1, 1, 0)
-            # thoracic_body = 1 - thoracic_body
-
-            # new_image = image_dataset[i][:,:,j]*thoracic_body
-
-            # new_mask = np.copy(mask_dataset[i][:,:,j])
-            # new_mask[mask_dataset[i][:,:,j] == 1] = 0
-
+    if image_names[i] == "A21_02_FatFrac_IDEAL_IQ_PDFF_11":
+        for j in range(12, mask_dataset[i].shape[2]):
             sliced_image_dataset.append(image_dataset[i][:,:,j])
             sliced_mask_dataset.append(mask_dataset[i][:,:,j])
             sliced_image_names.append(image_names[i] + '-' + str(j))
             original_data_size += 1
-            # #rotation
-            # cw = random.randint(0,1)
-            # angle = random.randint(5,10)
-            # #contrast adjustment
-            # adjust = random.randint(0,1)
-            # contrast = random.randint(1,2)
-            # #reflection
-            # reflect = random.randint(0,1)
-            # #applying changes
-            # if adjust and cw == 1:
-            #     augmented_image = rotate(cv2.convertScaleAbs(new_image, alpha = contrast, beta = 0), angle, reshape = False, order=1)
-            #     augmented_mask = rotate(new_mask, angle, reshape = False, order=0)
-                
-            #     sliced_image_dataset.append(augmented_image)
-            #     sliced_mask_dataset.append(augmented_mask)
-            #     sliced_image_names.append(image_names[i] + '-' + str(j) + '-aug')
-            # if adjust and cw == 0:
-            #     augmented_image = rotate(cv2.convertScaleAbs(new_image, alpha = contrast, beta = 0), angle * -1, reshape = False, order=1)
-            #     augmented_mask = rotate(new_mask, angle * -1, reshape = False, order=0)
-                
-            #     sliced_image_dataset.append(augmented_image)
-            #     sliced_mask_dataset.append(augmented_mask)
-            #     sliced_image_names.append(image_names[i] + '-' + str(j) + '-aug')
+    elif image_names[i] == "A21_12_FatFrac_2D_FAM_BH_18":
+        for j in range(0,7):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+        for j in range(12,16):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+        for j in range(19, mask_dataset[i].shape[2]):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+    elif image_names[i] == "A21_13_New_FatFrac_IDEAL_IQ_PDFF_13":
+        for j in range(14,42):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+        for j in range(52, mask_dataset[i].shape[2]):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+    elif image_names[i] == "A21_16_New_FatFrac_IDEAL_IQ_PDFF_16":
+        for j in range(0,38):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+        for j in range(46, mask_dataset[i].shape[2]):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+    elif image_names[i] == "A21_16_New_FatFrac_IDEAL_IQ_PDFF_24":
+        for j in range(0,25):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+        for j in range(34, 55):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+    elif image_names[i] == "A21_17_New_FatFrac_IDEAL_IQ_PDFF_24":
+        for j in range(6,mask_dataset[i].shape[2]):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+    elif image_names[i] == "A21_19_FatFrac_IDEAL_IQ_PDFF_14":
+        for j in range(19,48):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
+        for j in range(54, mask_dataset[i].shape[2]):
+            sliced_image_dataset.append(image_dataset[i][:,:,j])
+            sliced_mask_dataset.append(mask_dataset[i][:,:,j])
+            sliced_image_names.append(image_names[i] + '-' + str(j))
+            original_data_size += 1
     else:
-        for j in range(10, mask_dataset[i].shape[2]-10):
-            # thoracic_body = np.where(mask_dataset[i][:,:,j] == 1, 1, 0)
-            # thoracic_body = 1 - thoracic_body
-
-            # new_image = image_dataset[i][:,:,j]*thoracic_body
-
-            # new_mask = np.copy(mask_dataset[i][:,:,j])
-            # new_mask[mask_dataset[i][:,:,j] == 1] = 0
-
+        for j in range(mask_dataset[i].shape[2]):
             sliced_image_dataset.append(image_dataset[i][:,:,j])
             sliced_mask_dataset.append(mask_dataset[i][:,:,j])
             sliced_image_names.append(image_names[i] + '-' + str(j))
             original_data_size += 1
-            # #rotation
-            # cw = random.randint(0,1)
-            # angle = random.randint(5,10)
-            # #contrast adjustment
-            # adjust = random.randint(0,1)
-            # contrast = random.randint(1,2)
-            # #applying changes
-            # if adjust and cw == 1:
-            #     augmented_image = rotate(cv2.convertScaleAbs(new_image, alpha = contrast, beta = 0), angle, reshape = False, order=1)
-            #     augmented_mask = rotate(new_mask, angle, reshape = False, order=0)
-                
-            #     sliced_image_dataset.append(augmented_image)
-            #     sliced_mask_dataset.append(augmented_mask)
-            #     sliced_image_names.append(image_names[i] + '-' + str(j) + '-aug')
-            # if adjust and cw == 0:
-            #     augmented_image = rotate(cv2.convertScaleAbs(new_image, alpha = contrast, beta = 0), angle * -1, reshape = False, order=1)
-            #     augmented_mask = rotate(new_mask, angle * -1, reshape = False, order=0)
-                
-            #     sliced_image_dataset.append(augmented_image)
-            #     sliced_mask_dataset.append(augmented_mask)
-            #     sliced_image_names.append(image_names[i] + '-' + str(j) + '-aug')
-
 
 sliced_image_dataset = np.array(sliced_image_dataset)
 sliced_mask_dataset = np.array(sliced_mask_dataset)
@@ -372,13 +367,41 @@ print(f'Original Data Size: {original_data_size}')
 print(f'Dataset Size: {len(sliced_image_dataset)}')
 
 #Sanity check, view a few images
-# image_number = random.randint(0, len(sliced_image_dataset))
-# plt.figure(figsize=(12, 6))
-# plt.subplot(121)
-# plt.imshow(sliced_image_dataset[image_number], cmap='gray')
-# plt.subplot(122)
-# plt.imshow(sliced_mask_dataset[image_number], cmap='gray')
-# plt.show()
+image_number = random.randint(0, len(sliced_image_dataset))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(sliced_image_dataset[image_number], cmap='gray')
+plt.subplot(122)
+plt.imshow(sliced_mask_dataset[image_number], cmap='gray')
+plt.show()
+image_number = random.randint(0, len(sliced_image_dataset))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(sliced_image_dataset[image_number], cmap='gray')
+plt.subplot(122)
+plt.imshow(sliced_mask_dataset[image_number], cmap='gray')
+plt.show()
+image_number = random.randint(0, len(sliced_image_dataset))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(sliced_image_dataset[image_number], cmap='gray')
+plt.subplot(122)
+plt.imshow(sliced_mask_dataset[image_number], cmap='gray')
+plt.show()
+image_number = random.randint(0, len(sliced_image_dataset))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(sliced_image_dataset[image_number], cmap='gray')
+plt.subplot(122)
+plt.imshow(sliced_mask_dataset[image_number], cmap='gray')
+plt.show()
+image_number = random.randint(0, len(sliced_image_dataset))
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(sliced_image_dataset[image_number], cmap='gray')
+plt.subplot(122)
+plt.imshow(sliced_mask_dataset[image_number], cmap='gray')
+plt.show()
 
 #Encode labels... but multi dim array so need to flatten, encode and reshape
 labelencoder = LabelEncoder()
@@ -394,7 +417,7 @@ sliced_image_dataset = normalize(sliced_image_dataset, axis=1)
 
 sliced_mask_dataset = np.expand_dims(sliced_masks_encoded_original_shape, axis=3)
 
-f = open(f"C:/Users/Mittal/Desktop/thoracic_seg/outputs/multi_unet_output.txt", "a")
+f = open(f"C:/Users/Mittal/Desktop/thoracic_seg/outputs/cylinderFixOutputs.txt", "a")
 print("original image dataset: ", original_data_size, file=f)
 print("sliced image dataset: ", len(sliced_image_dataset), file=f)
 f.close()
@@ -409,7 +432,7 @@ def manual_class_weight(labels):
 class_weights = manual_class_weight(sliced_masks_reshaped_encoded)
 class_weights /= np.sum(class_weights)
 
-f = open(f"C:/Users/Mittal/Desktop/thoracic_seg/outputs/multi_unet_output.txt", "a")
+f = open(f"C:/Users/Mittal/Desktop/thoracic_seg/outputs/cylinderFixOutputs.txt", "a")
 print("Class weights:", class_weights, file=f)
 f.close()
 
@@ -438,7 +461,7 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
 
     model = get_model()
 
-    checkpoint = ModelCheckpoint(f'C:/Users/Mittal/Desktop/thoracic_seg/models/multi_unet_model2_{i}.h5', monitor='val_loss', save_best_only=True)
+    checkpoint = ModelCheckpoint(f'C:/Users/Mittal/Desktop/thoracic_seg/models/cylinderFix_{i}.h5', monitor='val_loss', save_best_only=True)
     lr_reduction = ReduceLROnPlateau(monitor='val_loss', 
                                  factor=0.5, 
                                  patience=10, 
@@ -450,7 +473,7 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
     history = model.fit(X_train, y_train_cat, 
                         batch_size=64, 
                         verbose=1, 
-                        epochs=1000, 
+                        epochs=500, 
                         validation_data=(X_test, y_test_cat), 
                         shuffle=False,
                         callbacks=[checkpoint, lr_reduction, early_stopping])
@@ -469,7 +492,7 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
     plt.ylabel('dice_coef')
     plt.xlabel('Epoch')
     plt.tight_layout()
-    plt.savefig(f'C:/Users/Mittal/Desktop/thoracic_seg/outputs/multi_unet_process2_{i}.png')
+    plt.savefig(f'C:/Users/Mittal/Desktop/thoracic_seg/outputs/cylinderFixProcess_{i}.png')
     plt.close()
 
     max_dice_coef = max(history.history['dice_coef'])
@@ -477,7 +500,7 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
     max_tpr = max(history.history['tpr'])
     min_fpr = min(history.history['fpr'])
 
-    f = open(f'C:/Users/Mittal/Desktop/thoracic_seg/outputs/multi_unet_output.txt', "a")
+    f = open(f'C:/Users/Mittal/Desktop/thoracic_seg/outputs/cylinderFixOutputs.txt', "a")
     print("FOLD------------------------------------------", file=f)
     print("Max Dice Score: ", max_dice_coef, file=f)
     print("Max Val Dice Score: ", max_val_dice_coef, file=f)
@@ -485,7 +508,7 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
     print("Max FPR: ", min_fpr, file=f)
     f.close()
         
-    model.load_weights(f'C:/Users/Mittal/Desktop/thoracic_seg/models/multi_unet_model2_{i}.h5')
+    model.load_weights(f'C:/Users/Mittal/Desktop/thoracic_seg/models/cylinderFix_{i}.h5')
 
     dice_scores = []
     tprs = []
@@ -518,55 +541,10 @@ for i, (train_index, test_index) in enumerate(kf.split(sliced_image_dataset, sli
         plt.subplot(133)
         plt.title('Prediction on test image')
         plt.imshow(predicted_img, cmap='jet')
-        plt.savefig(f'C:/Users/Mittal/Desktop/thoracic_seg/multi_predictions2/fold{i}_{name_test[test_img_number]}.png')
+        plt.savefig(f'C:/Users/Mittal/Desktop/thoracic_seg/cylinderFix_predictions/fold{i}_{name_test[test_img_number]}.png')
         plt.close()
 
-
-    # filewise_predictions = {filename: [] for filename in image_names}
-    # for idx, filename in enumerate(image_names):
-    #     num_slices_per_image = image_dataset[idx].shape[2]  # Assuming image_dataset is accessible here
-    #     start_index = sum(image_dataset[i].shape[2] for i in range(idx))  # Start index for slices of this image
-    #     for z in range(num_slices_per_image):
-    #         test_img = sliced_image_dataset[start_index + z]
-    #         ground_truth = sliced_mask_dataset[start_index + z]
-    #         ground_truth_cat = to_categorical(sliced_mask_dataset, 7)[start_index + z]
-    #         test_img_norm = test_img[:,:,0][:,:,None]
-    #         test_img_input = np.expand_dims(test_img_norm, 0)
-    #         prediction = (model.predict(test_img_input))
-    #         predicted_img = np.argmax(prediction, axis=3)[0,:,:]
-
-    #         dice_score = dice_coef_p(ground_truth_cat, prediction)
-    #         pred_tpr = tpr_p(ground_truth_cat, prediction)
-    #         pred_fpr = fpr_p(ground_truth_cat, prediction)
-    #         dice_scores.append(dice_score)
-    #         tprs.append(pred_tpr)
-    #         fprs.append(pred_fpr)
-
-    #         filewise_predictions[filename].append(prediction)
-    #         if z > 15 and z < 19:
-    #             plt.figure(figsize=(16, 8))
-    #             plt.subplot(131)
-    #             plt.title('Testing Image')
-    #             plt.imshow(test_img[:,:,0], cmap='gray')
-    #             plt.subplot(132)
-    #             plt.title('Testing Label')
-    #             plt.imshow(ground_truth[:,:,0], cmap='jet')
-    #             plt.subplot(133)
-    #             plt.title('Prediction on test image')
-    #             plt.imshow(predicted_img, cmap='jet')
-    #             plt.savefig(f'C:/Users/Mittal/Desktop/thoracic_seg/multi_predictions/fold{i}_{filename}_{z}.png')
-    #             plt.close()
-
-    # for filename, predictions in filewise_predictions.items():
-    #     if len(predictions) > 0:  # Check if predictions are available
-    #         three_d_predictions_volume = np.stack(predictions, axis=-1)
-    #         affine = np.eye(4)
-    #         nii_img = nib.Nifti1Image(three_d_predictions_volume, affine)
-    #         nib.save(nii_img, f'C:/Users/Mittal/Desktop/thoracic_seg/multi_niipredictions/{filename}.nii')
-    #     else:
-    #         print(f"No predictions available for {filename}.")
-
-    f = open(f'C:/Users/Mittal/Desktop/thoracic_seg/outputs/multi_unet_output.txt', "a")
+    f = open(f'C:/Users/Mittal/Desktop/thoracic_seg/outputs/cylinderFixOutputs.txt', "a")
     print("Average Prediction Dice Score: ", np.mean(dice_scores), file=f)
     print("Average Prediction TPR: ", np.mean(tprs), file=f)
     print("Average Prediction FPR: ", np.mean(fprs), file=f)

@@ -1,0 +1,44 @@
+original image dataset:  2141
+sliced image dataset:  2141
+Class weights: [0.00034947 0.00042195 0.19739353 0.1981761  0.20132082 0.19987667
+ 0.20246146]
+FOLD------------------------------------------
+Max Dice Score:  0.952835202217102
+Max Val Dice Score:  0.9000822305679321
+Max TPR:  0.9473500847816467
+Max FPR:  0.0035860310308635235
+Average Prediction Dice Score:  0.9463444110166749
+Average Prediction TPR:  0.479300921393538
+Average Prediction FPR:  0.004644928189990691
+FOLD------------------------------------------
+Max Dice Score:  0.9423405528068542
+Max Val Dice Score:  0.9142141342163086
+Max TPR:  0.9373722672462463
+Max FPR:  0.004337760619819164
+Average Prediction Dice Score:  0.9357484386283751
+Average Prediction TPR:  0.5652702746221842
+Average Prediction FPR:  0.005322433331665178
+FOLD------------------------------------------
+Max Dice Score:  0.9455813765525818
+Max Val Dice Score:  0.8967090249061584
+Max TPR:  0.9382379055023193
+Max FPR:  0.003767074551433325
+Average Prediction Dice Score:  0.9243481615201159
+Average Prediction TPR:  0.6687799070229754
+Average Prediction FPR:  0.005336013216064261
+FOLD------------------------------------------
+Max Dice Score:  0.936805009841919
+Max Val Dice Score:  0.8774503469467163
+Max TPR:  0.9316230416297913
+Max FPR:  0.004625900648534298
+Average Prediction Dice Score:  0.9236198716085328
+Average Prediction TPR:  0.5046819533292884
+Average Prediction FPR:  0.006259840528310968
+FOLD------------------------------------------
+Max Dice Score:  0.9488067030906677
+Max Val Dice Score:  0.9234684705734253
+Max TPR:  0.9425735473632812
+Max FPR:  0.003545868443325162
+Average Prediction Dice Score:  0.9499849285881866
+Average Prediction TPR:  0.6267020253090513
+Average Prediction FPR:  0.004423844428584945
